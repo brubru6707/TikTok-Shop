@@ -9,7 +9,13 @@
         <h2>Messages:</h2>
         <ul>
             {{range .}}
-            <li id="{{.ID}}">{{.Content}}</li>
+            <li id="msg_{{.ID}}">
+                {{.Content}} 
+                <button class="favorite" onclick="favoriteContent('{{.ID}}')">Favorite</button>
+                <span style="display: none;">
+                    (Created at: {{.CreatedAt}})
+                </span>
+            </li>
             {{end}}
         </ul>
     </body>

@@ -27,8 +27,8 @@
                 {{range .}}
                 <li id="msg_{{.ID}}">
                     {{.Content}} 
-                    <button class="favorite">Favorite</button>
-                    <span display="none">
+                    <button class="favorite" onclick="favoriteContent('{{.ID}}')">Favorite</button>
+                    <span style="display: none;">
                         (Created at: {{.CreatedAt}})
                     </span>
                 </li>
