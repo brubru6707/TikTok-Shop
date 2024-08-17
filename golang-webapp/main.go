@@ -1,22 +1,40 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"sync"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Message struct {
-	Content string
+	ID        int
+	Content   string
+	CreatedAt string
 }
 
 var (
-	messages []Message
-	mu       sync.Mutex
+	db   *sql.DB
+	mu   sync.Mutex
+	tmpl *template.Template
 )
 
 func main() {
+	// Initialize database connection
+	var err error
+	db, err = sql.Open("mysql", "Username:Password@tcp(127.0.0.1:3306)/golang_webapp") // Update UserName and Password
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	// Load the HTML template
+	tmpl = template.Must(template.ParseFiles("index.html"))
+
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/submit", submitHandler)
 
@@ -25,14 +43,27 @@ func main() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("index.html")
+	// Retrieve messages from the database
+	mu.Lock()
+	rows, err := db.Query("SELECT id, content, created_at FROM messages ORDER BY created_at DESC")
+	mu.Unlock()
+
 	if err != nil {
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
+		http.Error(w, "Error retrieving messages", http.StatusInternalServerError)
 		return
 	}
+	defer rows.Close()
 
-	mu.Lock()
-	defer mu.Unlock()
+	var messages []Message
+	for rows.Next() {
+		var msg Message
+		err := rows.Scan(&msg.ID, &msg.Content, &msg.CreatedAt)
+		if err != nil {
+			http.Error(w, "Error scanning message", http.StatusInternalServerError)
+			return
+		}
+		messages = append(messages, msg)
+	}
 
 	tmpl.Execute(w, messages)
 }
@@ -49,9 +80,15 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Insert the new message into the database
 	mu.Lock()
-	messages = append(messages, Message{Content: content})
+	_, err := db.Exec("INSERT INTO messages (content) VALUES (?)", content)
 	mu.Unlock()
+
+	if err != nil {
+		http.Error(w, "Error saving message", http.StatusInternalServerError)
+		return
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
