@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Content</title>
+    <title>TikTok Hackathon</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <h1>Submit Content</h1>
-    <form action="/submit" method="POST">
-        <textarea name="content" rows="4" cols="50" placeholder="Write something..."></textarea><br>
-        <button type="submit">Submit</button>
-    </form>
+    <header>
+        <h1>TikTok Hackathon Project</h1>
+    </header>
 
-    <h2>Messages:</h2>
-    <ul>
-        {{range .}}
-        <li>{{.Content}}</li>
-        {{end}}
-    </ul>
+    <main>
+        <section class="content-submission">
+            <h2>Submit Your Content</h2>
+            <form id="contentForm">
+                <textarea id="contentInput" rows="4" placeholder="Enter your content here..."></textarea><br>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <section class="content-display">
+            <h2>Submitted Content</h2>
+            <ul id="contentList"></ul>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
 </body>
-
 </html>
