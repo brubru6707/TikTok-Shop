@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"sync"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -26,7 +25,7 @@ var (
 func main() {
 	// Initialize database connection
 	var err error
-	db, err = sql.Open("mysql", "Username:Password@tcp(127.0.0.1:3306)/golang_webapp") // Update UserName and Password
+	db, err = sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/golang_webapp") // Update UserName and Password
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,12 +46,12 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	rows, err := db.Query("SELECT id, content, created_at FROM messages ORDER BY created_at DESC")
 	mu.Unlock()
-
+	
 	if err != nil {
-		http.Error(w, "Error retrieving messages", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error retrieving messages: %v", err), http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
+	defer rows.Close()	
 
 	var messages []Message
 	for rows.Next() {
