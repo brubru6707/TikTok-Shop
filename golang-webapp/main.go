@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -23,6 +24,8 @@ var (
 )
 
 func main() {
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
 	// Initialize database connection
 	var err error
 	db, err = sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/golang_webapp") // Update UserName and Password
@@ -31,11 +34,10 @@ func main() {
 	}
 	defer db.Close()
 
-	// Load the HTML template
-	tmpl = template.Must(template.ParseFiles("index.html"))
-
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/submit", submitHandler)
+	//http.HandleFunc("/submitRecommend", submitRecommendedHandler)
+	http.HandleFunc("/recommend", getRecommendedHandler)
 
 	fmt.Println("Starting server on :8080...")
 	http.ListenAndServe(":8080", nil)
@@ -43,15 +45,20 @@ func main() {
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve messages from the database
+	tmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	mu.Lock()
 	rows, err := db.Query("SELECT id, content, created_at FROM messages ORDER BY created_at DESC")
 	mu.Unlock()
-	
+
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error retrieving messages: %v", err), http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()	
+	defer rows.Close()
 
 	var messages []Message
 	for rows.Next() {
@@ -63,7 +70,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		messages = append(messages, msg)
 	}
-
 	tmpl.Execute(w, messages)
 }
 
@@ -90,4 +96,43 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func getRecommendedHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("recommend.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	mu.Lock()
+	rows, err := db.Query(`
+    SELECT m.id, m.content, m.created_at
+    FROM messages m
+    JOIN favorites f ON m.id = f.message_id
+	`)
+	mu.Unlock()
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving messages: %v", err), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var messages []Message
+	for rows.Next() {
+		var msg Message
+		err := rows.Scan(&msg.ID, &msg.Content, &msg.CreatedAt)
+		if err != nil {
+			http.Error(w, "Error scanning message", http.StatusInternalServerError)
+			return
+		}
+		messages = append(messages, msg)
+	}
+
+	html_err := tmpl.Execute(w, messages)
+	if html_err != nil {
+		http.Error(w, "Error rendering recommended webpage", http.StatusInternalServerError)
+		return
+	}
 }
