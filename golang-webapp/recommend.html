@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recommended</title>
 </head>
-    <body>
-        <h2>Messages:</h2>
-        <ul>
-            {{range .}}
-            <li id="msg_{{.ID}}">
-                {{.Content}} 
-                <button class="favorite" onclick="favoriteContent('{{.ID}}')">Favorite</button>
-                <span style="display: none;">
-                    (Created at: {{.CreatedAt}})
-                </span>
-            </li>
-            {{end}}
-        </ul>
-    </body>
+
+<body>
+    <h2>Messages:</h2>
+    <ul>
+        {{range .}}
+        <li id="msg_{{.ID}}">
+            {{.Content}}
+            <button class="favorite" onclick="favoriteContent('{{.ID}}')">Favorite</button>
+            <span style="display: none;">
+                (Created at: {{.CreatedAt}})
+            </span>
+        </li>
+        {{end}}
+    </ul>
+</body>

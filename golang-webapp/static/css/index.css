@@ -43,6 +43,91 @@ h2 {
     border: 1px solid #ccc;
 }
 
+.content-display {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.favorite-display {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    width: 80%;
+    max-width: 800px;
+}
+
+#favoriteList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px;
+    background: #ffebcd;
+    /* Light yellow background for favorites */
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    /* Allow text and buttons to wrap properly */
+}
+
+#favoriteList .content-text {
+    flex-grow: 1;
+    margin-right: 20px;
+    max-width: calc(100% - 160px);
+    /* Ensure the text does not overlap with buttons */
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+#favoriteList .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 140px;
+    /* Ensure buttons have enough space */
+}
+
+#favoriteList li.long-text {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#favoriteList li.long-text .content-text {
+    margin-bottom: 10px;
+}
+
+#favoriteList li.long-text .button-container {
+    justify-content: flex-end;
+    width: 100%;
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
 button {
     background-color: #ff0050;
     color: white;
@@ -51,29 +136,52 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    margin-top: 10px;
+    margin-left: 10px;
 }
 
 button:hover {
     background-color: #e00045;
 }
 
-.content-display {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 200px;
+    /* Adjust the minimum width for the button container */
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+.content-text {
+    flex-grow: 1;
+    margin-right: 20px;
+    /* Space between text and buttons */
+    max-width: calc(100% - 180px);
+    /* Ensure the text doesn't overlap with the buttons */
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
-li {
-    background: #f9f9f9;
-    margin: 5px 0;
-    padding: 10px;
-    border-radius: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+
+
+/* Adjust for long text */
+li.long-text {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    /* Ensure content stays at the top and buttons at the bottom */
+}
+
+li.long-text .content-text {
+    margin-bottom: 10px;
+    /* Add space below the content */
+    width: 100%;
+}
+
+
+li.long-text .button-container {
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: auto;
+    align-self: flex-end;
 }

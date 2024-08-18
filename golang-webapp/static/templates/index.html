@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <title>Message Board</title>
+</head>
+
+<body>
+    <header>
+        <h1>TikTok Hackathon Project</h1>
+    </header>
+
+    <main>
+        <section class="content-submission">
+            <h2>Submit Your Content</h2>
+            <form id="contentForm" action="/submit" method="POST">
+                <textarea name="content" id="contentInput" rows="4" cols="50"
+                    placeholder="Enter your content here..."></textarea>
+                <br>
+                <button id="submit-button" type="submit">Submit</button>
+            </form>
+        </section>
+
+        <section class="content-display">
+            <h2>All Messages:</h2>
+            <ul id="contentList">
+                {{range .}}
+                <li id="message-{{.ID}}">
+                    <div class="content-text">{{.Content}}</div>
+                    <div class="button-container">
+                        <button class="favorite" onclick="favoriteContent('{{.ID}}', '{{.Content}}')">Favorite</button>
+                        <button class="delete" onclick="deleteMessage(event, '{{.ID}}')">Delete</button>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+        </section>
+
+        <section class="favorite-display">
+            <h2>Favorite Messages</h2>
+            <ul id="favoriteList">
+                <!-- Favorite messages will be dynamically added here -->
+            </ul>
+        </section>
+    </main>
+
+    <!-- Modal for showing notifications -->
+    <div id="notification-modal"></div>
+</body>
+<script src="/static/js/script.js"></script>
+
+</html>
