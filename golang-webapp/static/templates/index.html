@@ -27,7 +27,7 @@
         <section class="content-display">
             <h2>All Messages:</h2>
             <ul id="contentList">
-                {{range .}}
+                {{range .Messages}}
                 <li id="message-{{.ID}}">
                     <div class="content-text">{{.Content}}</div>
                     <div class="button-container">
@@ -42,6 +42,12 @@
         <section class="favorite-display">
             <h2>Favorite Messages</h2>
             <ul id="favoriteList">
+                {{range .Favorites}}
+                <li id="favorite-{{.ID}}">
+                    <div class="content-text">{{.Content}}</div>
+                    <button class="delete-favorite" onclick="deleteFavorite(event, '{{.ID}}')">Delete Favorite</button>
+                </li>
+                {{end}}
                 <!-- Favorite messages will be dynamically added here -->
             </ul>
         </section>

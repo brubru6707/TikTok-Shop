@@ -9,49 +9,43 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('contentForm').addEventListener('submit', function (e) {
-        // e.preventDefault(); // Remove or comment out this line
-
-        const contentInput = document.getElementById('contentInput');
-        const content = contentInput.value.trim();
-
-        if (content) {
-            // Add content to the list in the DOM (optional)
-            addContentToList(content);
-            contentInput.value = '';
-
-            // Check if the newly added content is long
-            const newItem = document.querySelector('#contentList li:last-child');
-            if (content.length > 100) {
-                newItem.classList.add('long-text');
-            }
-        }
-
-        // Submit the form to save the data to the database
-        // The form submission will now proceed and be handled by the server
-    });
 });
 
 function deleteMessage(event, id) {
     event.stopPropagation();  // Prevent the click event from bubbling up to the li element
     console.log(`Delete button clicked for message ID: ${id}`);  // Debugging log
 
-    if (confirm("Are you sure you want to delete this message?")) {
-        fetch(`/delete?id=${id}`, {
-            method: 'POST'
+    fetch(`/delete?id=${id}`, {
+        method: 'POST'
+    })
+        .then(response => {
+            if (response.ok) {
+                // Remove the content item from the DOM
+                document.getElementById(`message-${id}`).remove();
+            } else {
+                console.error("Failed to delete message");
+            }
         })
-            .then(response => {
-                if (response.ok) {
-                    // Remove the content item from the DOM
-                    document.getElementById(`message-${id}`).remove();
-                } else {
-                    console.error("Failed to delete message");
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
+        .catch(error => console.error('Error:', error));
 }
 
+function deleteMessage(event, id) {
+    event.stopPropagation();  // Prevent the click event from bubbling up to the li element
+    console.log(`Delete button clicked for favorite ID: ${id}`);  // Debugging log
+
+    fetch(`/deleteFavorite?id=${id}`, {
+        method: 'POST'
+    })
+        .then(response => {
+            if (response.ok) {
+                // Remove the content item from the DOM
+                document.getElementById(`favorite-${id}`).remove();
+            } else {
+                console.error("Failed to delete favorite");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
 
 let socket = new WebSocket("ws://localhost:8080/notifications");
 
@@ -93,19 +87,6 @@ function showNotification(message) {
     }, 3000);
 }
 
-function addContentToList(content) {
-    const contentList = document.getElementById('contentList');
-    const trimmedContent = content.trim(); // Trim whitespace
-    const li = document.createElement('li');
-    li.innerHTML = `<div class="content-text">${trimmedContent}</div>
-                        <div class="button-container">
-                            <button class="favorite" onclick="favoriteContent('${li.id}', '${trimmedContent}')">Favorite</button>
-                            <button class="delete" onclick="deleteMessage(event, '${li.id}')">Delete</button>
-                        </div>`;
-    contentList.appendChild(li);
-}
-
-
 function favoriteContent(msgID, content) {
     console.log("favoriteContent function called with:", msgID, content);
 
@@ -120,21 +101,18 @@ function favoriteContent(msgID, content) {
     `;
     favoriteList.appendChild(li);
 
-    // Send favorite request to the server
-    fetch('/submitRecommend', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 'msg_id': msgID }),
+    fetch(`/submitRecommend?id=${msgID}`, {
+        method: 'POST'
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
+        .then(response => {
+            if (response.ok) {
+                // Remove the content item from the DOM
+                document.getElementById(`message-${id}`).remove();
+            } else {
+                console.error("Failed to delete message");
+            }
         })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+        .catch(error => console.error('Error:', error));
 }
 
 
